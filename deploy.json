@@ -1,0 +1,10 @@
+{
+    "REPO_URL":"https://github.com/kdh9787/deploy",
+    "PROJECT_NAME":"deploy",
+    "REMOTE_HOST":"ec2-3-34-179-229.ap-northeast-2.compute.amazonaws.com",
+    "REMOTE_HOST_SSH":"3.34.179.229 ",
+    "REMOTE_USER":"ubuntu"
+}
+
+
+
