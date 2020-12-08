@@ -19,7 +19,7 @@ env.hosts = [
     REMOTE_HOST_SSH,
 ]
 env.use_ssh_config = True
-env.key_filename = '../gemoney.pem'
+env.key_filename = '../ai_flask.pem'
 project_folder = '/home/{}/{}'.format(env.user, PROJECT_NAME)
 apt_requirements = [
     'curl',
@@ -33,6 +33,7 @@ apt_requirements = [
     'libssl-dev',
     'libffi-dev',
 ]
+
 
 def new_server():
     setup()
@@ -53,20 +54,24 @@ def deploy():
     _grant_apache2()
     _restart_apache2()
 
+
 def _put_envs():
     pass  # activate for envs.json file
     # put('envs.json', '~/{}/envs.json'.format(PROJECT_NAME))
+
 
 def _get_latest_apt():
     update_or_not = input('would you update?: [y/n]')
     if update_or_not == 'y':
         sudo('apt-get update && apt-get -y upgrade')
 
+
 def _install_apt_requirements(apt_requirements):
     reqs = ''
     for req in apt_requirements:
         reqs += (' ' + req)
     sudo('apt-get -y install {}'.format(reqs))
+
 
 def _make_virtualenv():
     if not exists('~/.virtualenvs'):
@@ -78,6 +83,7 @@ def _make_virtualenv():
         sudo('pip3 install virtualenv virtualenvwrapper')
         run('echo {} >> ~/.bashrc'.format(script))
 
+
 def _get_latest_source():
     if exists(project_folder + '/.git'):
         run('cd %s && git fetch' % (project_folder,))
@@ -87,17 +93,22 @@ def _get_latest_source():
     run('cd %s && git reset --hard %s' % (project_folder, current_commit))
     #run('cd %s && git reset --hard' % (project_folder, ))
 
+
 def _update_virtualenv():
-    virtualenv_folder = project_folder + '/../.virtualenvs/{}'.format(PROJECT_NAME)
+    virtualenv_folder = project_folder + \
+        '/../.virtualenvs/{}'.format(PROJECT_NAME)
     if not exists(virtualenv_folder + '/bin/pip'):
-        run('cd /home/%s/.virtualenvs && virtualenv %s' % (env.user, PROJECT_NAME))
+        run('cd /home/%s/.virtualenvs && virtualenv %s' %
+            (env.user, PROJECT_NAME))
     run('%s/bin/pip install -r %s/requirements.txt' % (
         virtualenv_folder, project_folder
     ))
 
+
 def _ufw_allow():
     sudo("ufw allow 'Apache Full'")
     sudo("ufw reload")
+
 
 def _make_virtualhost():
     script = """'<VirtualHost *:80>
@@ -122,9 +133,11 @@ def _make_virtualhost():
     sudo('echo {} > /etc/apache2/sites-available/{}.conf'.format(script, PROJECT_NAME))
     sudo('a2ensite {}.conf'.format(PROJECT_NAME))
 
+
 def _grant_apache2():
     sudo('chown -R :www-data ~/{}'.format(PROJECT_NAME))
     sudo('chmod -R 775 ~/{}'.format(PROJECT_NAME))
+
 
 def _restart_apache2():
     sudo('sudo service apache2 restart')
